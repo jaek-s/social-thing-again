@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.db import init_db
-from app.routers import posts
+from app.routers import posts, comments
 
 
 @asynccontextmanager
@@ -17,3 +17,4 @@ app = FastAPI(
 )
 
 app.include_router(posts.router, tags=["Posts"])
+app.include_router(comments.router, tags=["Comments"])

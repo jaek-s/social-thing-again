@@ -1,39 +1,30 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
-from app.dependencies import get_db_session
-from app.models import Post, PostCreate
+from app.dependencies import get_db_session, get_post_from_param
+from app import models
 
 router = APIRouter()
 
 
-@router.post("/posts")
+@router.post("/posts", response_model=models.PostRead)
 def create_post(
-    session: Annotated[Session, Depends(get_db_session)], post: PostCreate
-) -> Post:
-    db_post = Post.model_validate(post)
+    post: models.PostCreate, session: Annotated[Session, Depends(get_db_session)]
+):
+    db_post = models.Post.model_validate(post)
     session.add(db_post)
     session.commit()
     session.refresh(db_post)
     return db_post
 
 
-@router.get("/posts", response_model=list[Post])
+@router.get("/posts", response_model=list[models.Post])
 def get_post_list(session: Annotated[Session, Depends(get_db_session)]):
-    return session.exec(select(Post)).all()
+    return session.exec(select(models.Post)).all()
 
 
-@router.get("/posts/{post_id}")
-def get_single_post(
-    session: Annotated[Session, Depends(get_db_session)], post_id: int
-) -> Post:
-    post = session.exec(select(Post).where(Post.id == post_id)).first()
-
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
-        )
-
+@router.get("/posts/{post_id}", response_model=models.PostRead)
+def get_single_post(post: Annotated[models.Post, Depends(get_post_from_param)]):
     return post

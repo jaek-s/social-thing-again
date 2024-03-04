@@ -1,4 +1,9 @@
-from sqlmodel import Field, SQLModel
+from typing import TYPE_CHECKING
+
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from app.models import Comment
 
 
 class PostBase(SQLModel):
@@ -9,6 +14,12 @@ class PostBase(SQLModel):
 class Post(PostBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
+    comments: list["Comment"] = Relationship(back_populates="post")
+
 
 class PostCreate(PostBase):
     pass
+
+
+class PostRead(PostBase):
+    id: int
