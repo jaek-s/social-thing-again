@@ -25,7 +25,7 @@ dev = [
 ]
 
 [tool.pdm.scripts]
-dev = "uvicorn main:app --app-dir src/app/ --reload"
+dev = "uvicorn app.main:app --app-dir src/ --reload"
 format = "ruff format src/app/ tests/"
 lint = "ruff check src/app/ tests/"
 lintfix = "ruff check src/app/ tests/ --fix"
