@@ -6,3 +6,7 @@ from .post import Post as Post
 from .post import PostBase as PostBase
 from .post import PostCreate as PostCreate
 from .post import PostRead as PostRead
+from .user import User as User
+from .user import UserBase as UserBase
+from .user import UserCreate as UserCreate
+from .user import UserRead as UserRead

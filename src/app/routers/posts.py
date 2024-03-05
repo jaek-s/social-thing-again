@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
-from app.dependencies import get_db_session, get_post_from_param
 from app import models
+from app.dependencies import get_db_session, get_post_from_param
 
 router = APIRouter()
 

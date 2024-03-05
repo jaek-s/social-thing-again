@@ -15,7 +15,7 @@ def create_comment(
     post: Annotated[models.Post, Depends(get_post_from_param)],
     session: Annotated[Session, Depends(get_db_session)],
 ):
-    db_comment = models.Comment.model_validate({ **comment.model_dump(), "post_id": post.id})
+    db_comment = models.Comment.model_validate(comment, update={"post_id": post.id})
     session.add(db_comment)
     session.commit()
     session.refresh(db_comment)
