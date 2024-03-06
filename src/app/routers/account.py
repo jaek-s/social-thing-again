@@ -5,7 +5,7 @@ from sqlmodel import Session
 
 from app import models
 from app.auth import hash_password
-from app.dependencies import get_db_session
+from app.dependencies import get_db_session, get_current_user
 
 router = APIRouter()
 
@@ -23,6 +23,6 @@ def create_account(
     return db_user
 
 
-@router.get("/account")
-def get_account():
-    return {"foo": "bar"}
+@router.get("/account", response_model=models.UserRead)
+def get_account(current_user: Annotated[models.User, Depends(get_current_user)]):
+    return current_user
