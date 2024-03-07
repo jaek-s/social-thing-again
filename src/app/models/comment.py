@@ -2,6 +2,10 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
 
+# TODO: There seems to be a bug related to moving this into the `TYPE_CHECKING` block. Investigate and report
+# ALSO: I'm not able to remove the `.user` from the import, and UserRead is the last thing in __init__.py
+from app.models.user import UserRead
+
 if TYPE_CHECKING:
     from app.models import Post, User
 
@@ -26,3 +30,7 @@ class CommentCreate(CommentBase):
 class CommentRead(CommentBase):
     id: int
     post_id: int
+
+
+class CommentReadWithAuthor(CommentRead):
+    author: UserRead

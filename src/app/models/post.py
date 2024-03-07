@@ -2,6 +2,9 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
 
+# TODO: There seems to be a bug related to moving this into the `TYPE_CHECKING` block. Investigate and report
+from app.models import CommentRead
+
 if TYPE_CHECKING:
     from app.models import Comment, User
 
@@ -25,3 +28,11 @@ class PostCreate(PostBase):
 
 class PostRead(PostBase):
     id: int
+
+
+class PostReadWithComments(PostRead):
+    comments: list["CommentRead"] = Field()
+
+
+class PostReadWithCommentsAndAuthor(PostRead):
+    author: "User"
