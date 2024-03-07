@@ -3,7 +3,7 @@ name = "social-thing-again"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [
-    {name = "Jake Salgado", email = "5466068+jaek-s@users.noreply.github.com"},
+    { name = "Jake Salgado", email = "5466068+jaek-s@users.noreply.github.com" },
 ]
 dependencies = [
     "sqlmodel>=0.0.16",
@@ -16,17 +16,14 @@ dependencies = [
 ]
 requires-python = "==3.12.*"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
 
 [tool.pdm]
 distribution = false
 
 [tool.pdm.dev-dependencies]
-dev = [
-    "ruff>=0.3.0",
-    "pyright>=1.1.352",
-]
+dev = ["ruff>=0.3.0", "pyright>=1.1.352"]
 
 [tool.pdm.scripts]
 dev = "uvicorn app.main:app --app-dir src/ --reload"
@@ -38,6 +35,7 @@ typecheck = "pyright src/app/ tests/"
 [tool.ruff]
 line-length = 88
 
+
 [tool.ruff.lint]
 select = [
     "B",      # flake8-bugbear
@@ -48,4 +46,7 @@ select = [
     "I",      # isort
     "Q",      # flake8-quotes
     "RUF100", # Unused noqa directive
+]
+ignore = [
+    "E501", # line too long, handled by ruff formatter
 ]
