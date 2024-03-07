@@ -30,7 +30,7 @@ def get_auth_jwt(
         or not db_user.id
         or not verify_password(form_data.password, db_user.hashed_password)
     ):
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )

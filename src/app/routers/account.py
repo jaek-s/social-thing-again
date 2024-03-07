@@ -5,7 +5,7 @@ from sqlmodel import Session
 
 from app import models
 from app.auth import hash_password
-from app.dependencies import get_db_session, get_current_user
+from app.dependencies import get_current_user, get_db_session
 
 router = APIRouter()
 

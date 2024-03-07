@@ -4,7 +4,7 @@ from jose import jwt
 from passlib.context import CryptContext
 from sqlmodel import SQLModel
 
-from app.settings import settings
+from app.config import config
 
 ACCESS_JWT_EXPIRATION_MINUTES = 30
 JWT_ALGORITHM = "HS256"
@@ -31,12 +31,12 @@ def create_access_token(subject: int | str):
     )
     claims = DecodedToken(sub=str(subject), exp=expire)
     return jwt.encode(
-        claims=claims.model_dump(), key=settings.jwt_secret, algorithm=JWT_ALGORITHM
+        claims=claims.model_dump(), key=config.jwt_secret_key, algorithm=JWT_ALGORITHM
     )
 
 
 def decode_access_token(token: str):
     decoded_token = jwt.decode(
-        token, key=settings.jwt_secret, algorithms=[JWT_ALGORITHM]
+        token, key=config.jwt_secret_key, algorithms=[JWT_ALGORITHM]
     )
     return DecodedToken(**decoded_token)
