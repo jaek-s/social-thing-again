@@ -26,6 +26,16 @@ def get_post_from_param(
     return post
 
 
+def get_active_post_from_param(
+    post: Annotated[models.Post, Depends(get_post_from_param)],
+):
+    if post.deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
+        )
+    return post
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 

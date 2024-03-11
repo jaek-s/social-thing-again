@@ -1,11 +1,16 @@
+from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
-from sqlmodel import Session, select
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlmodel import Session, col, select
 
 from app import models
 from app.config import config
-from app.dependencies import get_current_user, get_db_session, get_post_from_param
+from app.dependencies import (
+    get_active_post_from_param,
+    get_current_user,
+    get_db_session,
+)
 
 router = APIRouter()
 
@@ -27,14 +32,20 @@ def create_post(
 def get_post_list(
     session: Annotated[Session, Depends(get_db_session)],
     offset: int = Query(default=0),
-    limit: int = Query(default=1, le=config.max_posts_per_page),
+    limit: int = Query(default=config.max_posts_per_page, le=config.max_posts_per_page),
 ):
-    return session.exec(select(models.Post).offset(offset).limit(limit)).all()
+    return session.exec(
+        select(models.Post)
+        .where(col(models.Post.deleted).is_(None))
+        .order_by(col(models.Post.created).desc())
+        .offset(offset)
+        .limit(limit)
+    ).all()
 
 
 @router.get("/posts/{post_id}", response_model=models.PostReadWithComments)
 def get_single_post(
-    post: Annotated[models.Post, Depends(get_post_from_param)],
+    post: Annotated[models.Post, Depends(get_active_post_from_param)],
     session: Annotated[Session, Depends(get_db_session)],
 ):
     comments = session.exec(
@@ -47,3 +58,20 @@ def get_single_post(
         post, update={"comments": comments}
     )
     return response_post
+
+
+@router.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(
+    post: Annotated[models.Post, Depends(get_active_post_from_param)],
+    current_user: Annotated[models.User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_db_session)],
+):
+    if post.author_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You cannot delete posts you did not create.",
+        )
+
+    post.deleted = datetime.now(timezone.utc)
+    session.add(post)
+    session.commit()
