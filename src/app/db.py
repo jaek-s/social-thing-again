@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, create_engine
 
-# NOTE: This import is necessary for the create_all() function to work
+# NOTE: This import is necessary for SQLModel.metadata.create_all() to work
 from app import models as models
 from app.config import config
 

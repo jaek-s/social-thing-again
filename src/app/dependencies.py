@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
-from sqlmodel import Session
+from sqlmodel import Session, col, select
 
 from app import models
 from app.auth import decode_access_token
@@ -19,20 +19,29 @@ def get_post_from_param(
     post_id: int, db_session: Annotated[Session, Depends(get_db_session)]
 ):
     post = db_session.get(models.Post, post_id)
+
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
         )
+
     return post
 
 
 def get_active_post_from_param(
-    post: Annotated[models.Post, Depends(get_post_from_param)],
+    post_id: int, db_session: Annotated[Session, Depends(get_db_session)]
 ):
-    if post.deleted:
+    post = db_session.exec(
+        select(models.Post)
+        .where(models.Post.id == post_id)
+        .where(col(models.Post.deleted).is_(None))
+    ).first()
+
+    if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
         )
+
     return post
 
 
