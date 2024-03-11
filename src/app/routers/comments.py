@@ -43,6 +43,8 @@ def get_comment_list(
     return session.exec(
         select(models.Comment)
         .where(models.Comment.post == post)
+        .where(col(models.Comment.deleted).is_(None))
+        .order_by(col(models.Comment.created).desc())
         .offset(offset)
         .limit(limit)
     ).all()
